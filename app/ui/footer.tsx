@@ -7,7 +7,7 @@ import clsx from 'clsx';
 const links = [
     { name: 'Privacy Policy', href: '/privacy' },
     { name: 'Terms of Use', href: '/terms' },
-    { name: 'Contact', href: 'mailto://info@highlowmedia.com' },
+    { name: 'Contact', href: 'mailto:info@highlowmedia.com' },
 ];
 
 export default function Footer() {
