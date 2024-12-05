@@ -1,5 +1,10 @@
 import Masthead from '@/app/ui/masthead';
 import Footer from '@/app/ui/footer';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'High Low Media | Privacy Policy',
+};
 
 export default function Page() {
   return (
