@@ -3,41 +3,57 @@
 import Footer from '@/app/ui/footer';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Bebas_Neue } from "next/font/google";
-import { useState, useEffect } from 'react';
+import { Bebas_Neue } from 'next/font/google';
+import { useState, useEffect, useRef } from 'react';
 import { uploadFile } from '../uploadFile';
 
 const bebas = Bebas_Neue({ subsets: ["latin"], weight: "400" });
 
-const handleFileChange = async ({ file }: { file: File | null }) => {
-  try {
-    if (!file) throw new Error("Function: handleFileChange expects a file");
-
-    if (file.size > 2 * 1024 * 1024) {
-      throw new Error("File size must not exceed 2MB");
-    }
-
-    if (!((file.type === "image/jpeg") || (file.type === "image/png"))) {
-      throw new Error("Only PNG and JPG images are allowed.");
-    }
-
-    const reader = new FileReader();
-
-    reader.onloadend = () => {
-      console.log(reader.result);
-    };
-
-    reader.readAsDataURL(file);
-
-    const fileUrl = await uploadFile({ fileName: file.name, file });
-    console.log(fileUrl);
-  } catch (err) {
-    console.error("Error in handleFileChange:", err);
-  }
-};
-
 export default function Page() {
+
+  const inputRef = useRef<any>(null);
+  const textRef = useRef<any>(null);
+  
   const [data, setData] = useState([]);
+
+  const handleFileChange = async (event: any) => {
+    const file = event.target.files?.[0] ?? null
+      
+    try {
+      if (!file) throw new Error("Function: handleFileChange expects a file");
+  
+      if (file.size > 2 * 1024 * 1024) {
+        throw new Error("File size must not exceed 2MB");
+      }
+  
+      if (!((file.type === "image/jpeg") || (file.type === "image/png"))) {
+        throw new Error("Only PNG and JPG images are allowed.");
+      }
+  
+      const reader = new FileReader();
+  
+      reader.onloadend = () => {
+        console.log(reader.result);
+      };
+  
+      reader.readAsDataURL(file);
+  
+      const uploadSuccess = await uploadFile({ fileName: file.name, file });
+      
+      if (uploadSuccess) {
+        if (inputRef.current) {
+          inputRef.current.style.display = 'none';
+        }
+        if (textRef.current) {
+          textRef.current.innerHTML = '<b>Image successfully uploaded.</b> Processing of image for display in the counter-surveillance operative dead drop will take 24-48 hours.';
+        }
+      }
+      
+    } catch (err) {
+      console.error("Error in handleFileChange:", err);
+    }
+  };
+
   useEffect(() => {
     document.title = "High Low Media | The Surveillance Statement Tee";
     const fetchData = async () => {
@@ -51,6 +67,7 @@ export default function Page() {
     };
     fetchData();
   }, []);
+  
   return (
     <div>
       <main className="flex min-h-screen flex-col items-center justify-top pb-20">
@@ -66,18 +83,15 @@ export default function Page() {
             Buy Now
             </button>
           </Link>
-          
           <input
             className="w-3/4 md:w-2/4 lg:w-2/4 block text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
             id="file_input"
             type="file"
             accept="image/*"
-            onChange={(e) => {
-              handleFileChange({ file: e.target.files?.[0] ?? null })
-            }}
+            ref={inputRef}
+            onChange={handleFileChange}
           />
-          <p className="w-3/4 md:w-2/4 lg:w-2/4 mt-1 mb-2 text-xs text-gray-500 dark:text-gray-300" id="file_input_help"><b>Counter-surveillance operative dead drop</b>: Asset and operative identities are protected - i.e., blurred (PNG or JPG images only, 2MB max)</p>
-         
+          <p ref={textRef} className="w-3/4 md:w-2/4 lg:w-2/4 mt-1 mb-2 text-xs text-gray-500 dark:text-gray-300" id="file_input_help"><b>Counter-surveillance operative dead drop</b>: Asset and operative identities are protected - i.e., blurred (PNG or JPG images only, 2MB max)</p>
         
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4">
           {Array.isArray(data) && data.length > 0 && data.map((item) => (
