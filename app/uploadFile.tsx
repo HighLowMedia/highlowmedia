@@ -6,11 +6,11 @@ export const uploadFile = async ({
     file: File;
     }) => {
     try {
-        const formData = new FormData();
-        formData.append('file', file);
+        //const formData = new FormData();
+        //formData.append('file', file);
         const response = await fetch('https://3vk0q6jjh5.execute-api.us-east-1.amazonaws.com/prod/highlowmediasurveillanceteeuploads/' + fileName, {
             method: 'PUT',
-            body: formData,
+            body: file,
         });
         if (response.ok) {
             console.log('File uploaded successfully');

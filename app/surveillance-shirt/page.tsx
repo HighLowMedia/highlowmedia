@@ -17,29 +17,20 @@ export default function Page() {
   const [data, setData] = useState([]);
 
   const handleFileChange = async (event: any) => {
+    
     const file = event.target.files?.[0] ?? null
-      
-    try {
-      if (!file) throw new Error("Function: handleFileChange expects a file");
-  
-      if (file.size > 2 * 1024 * 1024) {
-        throw new Error("File size must not exceed 2MB");
-      }
-  
-      if (!((file.type === "image/jpeg") || (file.type === "image/png"))) {
-        throw new Error("Only PNG and JPG images are allowed.");
-      }
-  
-      const reader = new FileReader();
-  
-      reader.onloadend = () => {
-        console.log(reader.result);
-      };
-  
-      reader.readAsDataURL(file);
-  
+     
+    if (!file) {
+      console.log('error: no file');
+    }
+    else if (file.size > 2 * 1024 * 1024) {
+      console.log('error: file exceeds size limit');
+    }
+    else if (!((file.type === "image/jpeg") || (file.type === "image/png"))) {
+      console.log('error: incorrect file type');
+    } else {
+      console.log('upload file size:' + file.size);
       const uploadSuccess = await uploadFile({ fileName: file.name, file });
-      
       if (uploadSuccess) {
         if (inputRef.current) {
           inputRef.current.style.display = 'none';
@@ -48,10 +39,8 @@ export default function Page() {
           textRef.current.innerHTML = '<b>Image successfully uploaded.</b> Processing of image for display in the counter-surveillance operative dead drop will take 24-48 hours.';
         }
       }
-      
-    } catch (err) {
-      console.error("Error in handleFileChange:", err);
     }
+
   };
 
   useEffect(() => {
